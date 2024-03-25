@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "id": 1,
+    "title": "Gol Trend ",
+    "description": "Modelo 2022",
+    "price": 150,
+    "thumbnail": "..",
+    "code": 1234,
+    "stock": 12
+  }
+]
