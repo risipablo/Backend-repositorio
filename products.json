@@ -7,5 +7,14 @@
     "thumbnail": "..",
     "code": 1234,
     "stock": 12
+  },
+  {
+    "id": 2,
+    "title": "Jepp Renegate ",
+    "description": "Modelo 2021",
+    "price": 700,
+    "thumbnail": "..",
+    "code": 123,
+    "stock": 6
   }
 ]

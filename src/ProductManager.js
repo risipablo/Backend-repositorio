@@ -2,7 +2,7 @@
 
 
 // Alumno: Pablo Risi
-// Entrega desafió numero 2
+// Entrega desafió numero 3
 
 
     const fs = require('fs');
@@ -82,9 +82,20 @@
     thumbnail: '..',
     code: 1234,
     stock: 12,
-    };
+    }
 
+    const product2 = {
+        title: 'Jepp Renegate ',
+        description: 'Modelo 2021',
+        price: 700,
+        thumbnail: '..',
+        code: 123,
+        stock: 6,
+        }
+        
+    
     productManager.addProduct(product);
+    productManager.addProduct(product2)
 
     const products = productManager.getProducts();
 
@@ -92,4 +103,4 @@
 
     productManager.updateProduct(1, { price: 150 });
 
-    productManager.deleteProduct(1);
+    productManager.deleteProduct();
