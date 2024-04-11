@@ -2,105 +2,128 @@
 
 
 // Alumno: Pablo Risi
-// Entrega desafió numero 3
+
+import fs from "fs";
+
+class ProductManager {
+#path = "./src/products.json";
 
 
-    const fs = require('fs');
+constructor() {}
 
-    class ProductManager {
-    constructor(path) {
-        this.path = path;
-        this.products = [];
-    }
-
-    async addProduct(product) {
-        const newProduct = {
-        id: this.products.length + 1,
-        ...product,
-        };
-        this.products.push(newProduct);
-        await this.saveProducts();
-        return newProduct;
-    }
-
-    async getProducts() {
-        await this.readProducts();
-        return this.products;
-    }
-
-    async getProductById(id) {
-        await this.readProducts();
-        return this.products.find((product) => product.id === id);
-    }
-
-    async updateProduct(id, updatedProduct) {
-        await this.readProducts();
-        const productIndex = this.products.findIndex((product) => product.id === id);
-        if (productIndex === -1) {
-        return null;
-        }
-        this.products[productIndex] = { ...this.products[productIndex], ...updatedProduct };
-        await this.saveProducts();
-        return this.products[productIndex];
-    }
-
-    async deleteProduct(id) {
-        await this.readProducts();
-        const productIndex = this.products.findIndex((product) => product.id === id);
-        if (productIndex === -1) {
-        return null;
-        }
-        this.products.splice(productIndex, 1);
-        await this.saveProducts();
-        return true;
-    }
-
-    async readProducts() {
-        try {
-        const data = await fs.promises.readFile(this.path, 'utf-8');
-        this.products = JSON.parse(data);
-        } catch (error) {
-        this.products = [];
-        }
-    }
-
-    async saveProducts() {
-        await fs.promises.writeFile(this.path, JSON.stringify(this.products, null, 2));
-    }
-    }
-
-    module.exports = ProductManager;
-
-
-    const productManager = new ProductManager('products.json');
+async addProduct(title,description,code,price,status,stock,category,thumbnail) {
     
+    console.log("estamos en la creacion del producto");
+    let id = (await this.contadorUnico()) +1;
+    console.log(id);
+    const products = await this.getProducts();
+    let exist = products.find((a) => a.code === code);
 
-    const product = {
-    title: 'Gol Trend ',
-    description: 'Modelo 2022',
-    price: 100,
-    thumbnail: '..',
-    code: 1234,
-    stock: 12,
-    }
-
-    const product2 = {
-        title: 'Jepp Renegate ',
-        description: 'Modelo 2021',
-        price: 700,
-        thumbnail: '..',
-        code: 123,
-        stock: 6,
+        if(exist){
+            
+            throw new Error("El codigo que se quiere crear ya existe");
         }
         
+            const newProduct = {
+            id,
+            title,
+            description,
+            code,
+            price,
+            status,
+            stock,
+            category,
+            thumbnail,};
+            const prodsUpd = [...products, newProduct];
+            await fs.promises.writeFile(this.#path, JSON.stringify(prodsUpd));
+            return newProduct;
+}
+
+async getProducts() {
+    try {
+    console.log("estamos en la consulta del producto");
+    const products = await fs.promises.readFile(this.#path, "utf-8");
+    console.log(products);
+    return JSON.parse(products);
+    } catch (e) {
+    return e;
+    }
+}
+
+async getProductsById(idb) {
     
-    productManager.addProduct(product);
-    productManager.addProduct(product2)
+    try {
+    console.log(idb);
+    const products = await this.getProducts();
+    let prodB = products.find((p) => p.id ===parseInt(idb.pid));
+    return prodB;
+    
+    } catch (error) {
+    console.error("El producto especificado no existe ");
+    }
+}
 
-    const products = productManager.getProducts();
+async updateProduct(idn, nuevo_valor) {
+        const productsU = await this.getProducts();
+        idn=parseInt(idn.pid);
+        
+    try {
+        let prodU = productsU.find((u)=>u.id===idn);
 
-    const productById = productManager.getProductById(1);
+        if(!prodU){
+            console.error(
+            "No existe el producto que deseas actualizar"
+            );
+        }
+        else{
+            
+            const updateProd = productsU.map((u) => {
+                if (u.id === idn) {
+                return {
+                ...u,
+                ...nuevo_valor,
+                };
+                }
+                return u;
+            }); 
+            
+            //await fs.promises.unlink(this.#path);
+            await fs.promises.writeFile(this.#path,JSON.stringify(updateProd));
+        }
+        
+    } catch (error) {
+    console.log(error);
+    }
+}
 
-    productManager.updateProduct(1, { price: 150 });
 
-    productManager.deleteProduct();
+async deleteProduct(idn) {
+
+    try {
+    const products = await this.getProducts();
+    let nuevosProd = products.find((producto) => producto.id != idn);
+    await fs.promises.unlink(this.#path);
+    await fs.promises.writeFile(this.#path, JSON.stringify(nuevosProd));
+
+    } catch (error) {
+    console.log("Ha ocurrido un error no se puede borrar el producto");
+    }
+}
+
+async contadorUnico() {
+    let ids = [];
+    const product_si = await this.getProducts();
+    console.log("desde contador unico");
+    for (let x = 0; x < product_si.length; x++) {
+    ids[x] = parseInt(product_si[x].id);
+    }
+
+    ids.sort(function (a, b) {
+    return b - a;
+    });
+    console.log(ids[0]);
+    return ids[0];
+}
+}
+
+export default ProductManager;
