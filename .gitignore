@@ -1,19 +1,2 @@
-node_modules
-# Ignora archivos del sistema Mac 
-.DS_store
 
-node_modules
-dist
-dist-ssr
-*.local
-
-# Ignora todos los archivos de texto
-*.txt
-
-# Ignora los archivos relacionados a API keys
-.env
-
-# Ignora archivos de configuración SASS
-.sass-cachedist
-dist-ssr
-*.local
+node_modules/
