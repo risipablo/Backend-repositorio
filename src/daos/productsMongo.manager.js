@@ -1,188 +1,179 @@
-// CRUD en mongo
-import productsModel from "./models/products.model.js";
+import { userModel } from "./models/users.models.js";
 
+export class UsersManagerMongo {
+  constructor() {
+    this.userModel = userModel;
+  }
 
+  async getUsers({ limit = 10, numPage = 1 }) {
+    const users = await this.userModel.paginate({}, { limit, page: numPage, sort: { price: -1 }, lean: true });
+    return users;
+  }
 
-class ProductsMongoManager {
+  async createUser(user) {
+    return await this.userModel.create(user);
+  }
+
+  async getUserBy(filter) {
+    return this.userModel.findOne(filter);
+  }
+
+  async getUserByEmail(email) {
+    return this.users.find((user) => user.email === email);
+  }
+
+}
+import cartsModel from "./models/carts.model.js";
+
+class CartsMongoManager {
     constructor() {
-        this.productsModel = productsModel;
+        this.cartsModel = cartsModel;
     }
 
-    getProducts = async ({ limit = 10, pageNum = 1, sortByPrice, category, status, title }) => {
-        let query = {}
-        if (category) {
-            query = { category:category };
-        }
-        if (status) {
-            query = { status:status };
-        }
-        if (title) {
-            query = { title: title };
-        }
-        
-        let toSortedByPrice = {}
-        if (sortByPrice){
-            toSortedByPrice = {price: parseInt(sortByPrice)}
-        }
-        
-        return await this.productsModel.paginate(query, { limit: limit, page: pageNum, lean: true, sort: toSortedByPrice });
+    addNewCart = async () => {
+        const cart = {
+            products: []
+        };
+        const createdCart = await this.cartsModel.create(cart);
+        return createdCart;
     }
 
-    addProduct = async (title, description, code, price, status, stock, category, thumbnails = './images/IMG_placeholder.jpg') => {
-        const newProduct = {
-            title: title,
-            description: description,
-            code: code,
-            price: price,
-            status: status,
-            stock: stock,
-            category: category,
-            thumbnails: thumbnails
-        }
+    addProductToCart = async (cartId, product, quantity) => {
         try {
-            return await this.productsModel.collection.insertOne(newProduct);
+
+            const cartExists = this.cartsModel.where({ _id: cartId, 'products.product': product })
+            const productExists = await cartExists.find()
+
+
+            if (productExists.length === 0) {
+                const addNewProduct = await this.cartsModel.findOneAndUpdate(
+                    { _id: cartId },
+                    { $addToSet: { products: { product: product, quantity: quantity } } },
+                    { new: true, upsert: true }
+                );
+                return { status: 'success', payload: addNewProduct };
+
+            } else {
+                const incrementQuantity = await this.cartsModel.findOneAndUpdate(
+                    { _id: cartId, 'products.product': product },
+                    { $inc: { 'products.$.quantity': quantity } },
+                    { new: true }
+
+                );
+                return { status: 'success', payload: incrementQuantity };
+            }
+        } catch (error) {
+            return error;
+        }
+    };
+    //PROFE
+    // usando un filtro podemos buscar por diferentes propiedades filter = {_id: cid} o {email: userEmail}
+    getCartBy = async (filter) => await this.cartsModel.findOne(filter).lean()
+
+    //MIO
+    // getCartById = async (cartId) => {
+    //     try {
+    //         return await this.cartsModel.findOne({ _id: cartId }).lean();
+
+
+    //     } catch (error) {
+    //         return error;
+    //     }
+    // };
+    updateProductFromCart = async (cartId, product, quantity) => {
+        try {
+            const cartExists = this.cartsModel.where({ _id: cartId, 'products.product': product })
+            const productExists = await cartExists.find()
+
+
+            if (productExists.length === 0) {
+                return { status: 'success', payload: `El producto no existe en el carrito ${cartId}` };
+            }
+            else {
+                const updatedProduct = await this.cartsModel.findOneAndUpdate(
+                    { _id: cartId, 'products.product': product },
+                    { $set: { 'products.$.quantity': quantity } },
+                    { new: true }
+                )
+                return { status: 'success', payload: updatedProduct };
+            }
+
 
         } catch (error) {
-            throw error
+
         }
     }
-    getProductsById = async (productId) => {
-        return await this.productsModel.findOne({ _id: productId }).lean();
-    }
-    updateProduct = async (productId, updatedProduct) => {
-        return await this.productsModel.updateOne({ _id: productId }, { $set: updatedProduct });
-    }
-    deleteProduct = async (productId) => {
-        return await this.productsModel.deleteOne({ _id: productId });
+    //PROFE
+    updateCart = async (cid, pid) => {
+        // Si existe el producto pid lo incrementa en 1
+        const result = await cartsModel.findOneAndUpdate(
+            { _id: cid, 'prodcuts.product': pid },// busque por _id el cid
+            { $inc: { 'products.$.quantity': 1 } }, // incrementa la quantity en 1
+            { new: true } // new en true para que nos devuelva a lo  ultimo el resultado, y upsert para que si no lo encuentra lo cree
+        )
+        if (result) return result
+
+        const newProductInCart = await cartsModel.findOneAndUpdate(
+            { _ud: cid },
+            { $push: { products: { product: pid, quantity: 1 } } },
+            { new: true }
+        )
+        return newProductInCart;
+
+
     }
 
+    // MIO  !! NO USAR TRY CATCH EN EL MANAGER, PORQUE LUEGO PASA AL ROUTER Y AHI SE USA TRY CATCH
+    // updateCart = async (cartId, products) => {
+    //     try {
+    //         const updatedCart = await this.cartsModel.findOneAndUpdate(
+    //             { _id: cartId },
+    //             { $push: { products: {$each: products} } },
+    //             { new: true, upsert: true }
+    //         );
+    //         return { status: 'success', payload: updatedCart };
+    //     } catch (error) {
+    //         return {status:'error', error: 'Error al agregar productos al carrito'}
+
+    //     }
+    // }
+
+    //PROFE
+    deleteProduct = async (cid, pid) => await cartsModel.findOneAndUpdate(
+        { _id: cid },
+        { $pull: { products: { product: pid, quantity: 1 } } },
+        { new: true }
+    )
+
+
+    // MIO
+    // deleteProductFromCart = async (cartId, product) => {
+    //     try {
+    //         const cartExists = await this.cartsModel.findByIdAndUpdate(
+    //             cartId,
+    //             { $pull: { products: { product: product } } },
+    //             { new: true }
+    //         );
+
+    //         if (!cartExists) {
+    //             return { status: 'error', error: `El carrito ${cartId} no existe` };
+    //         }
+
+    //         return { status: 'success', payload: `El producto ${product} fue eliminado del carrito ${cartId}` };
+    //     } catch (error) {
+    //         console.error('Error al borrar el producto del carrito:', error);
+    //         return { status: 'error', error: 'Error al eliminar el producto del carrito' };
+    //     }
+    // }
+
+    //PROFE
+    deleteCart = async (cid) => cartsModel.findOneAndUpdate(
+        { _id: cid },
+        { $set: { products: [] } },
+        { new: true }
+    )
 
 }
 
-// temporal para insertar mas productos
-const productosmuchos = [
-    {
-        "title": "Té-01",
-        "description": "té-01 Descripción",
-        "code": "TEA001",
-        "price": 215,
-        "status": true,
-        "stock": 30,
-        "category": "te",
-        "thumbnails": "./images/IMG_placeholder.jpg"
-    },
-    {
-        "title": "Té-02",
-        "description": "té-02 Descripción",
-        "code": "TEA002",
-        "price": 215,
-        "status": true,
-        "stock": 30,
-        "category": "te",
-        "thumbnails": "./images/IMG_placeholder.jpg"
-    },
-    {
-        "title": "Té-03",
-        "description": "té-03 Descripción",
-        "code": "TEA003",
-        "price": 215,
-        "status": true,
-        "stock": 30,
-        "category": "te",
-        "thumbnails": "./images/IMG_placeholder.jpg"
-    },
-    {
-        "title": "Té-04",
-        "description": "té-04 Descripción",
-        "code": "TEA004",
-        "price": 215,
-        "status": true,
-        "stock": 30,
-        "category": "te",
-        "thumbnails": "./images/IMG_placeholder.jpg"
-    },
-    {
-        "title": "Muffin-01",
-        "description": "Muffin-01 Descripción",
-        "code": "EAT001",
-        "price": 215,
-        "status": true,
-        "stock": 30,
-        "category": "comestibles",
-        "thumbnails": "./images/IMG_placeholder.jpg"
-    },
-    {
-        "title": "Muffin-02",
-        "description": "Muffin-02 Descripción",
-        "code": "EAT002",
-        "price": 215,
-        "status": true,
-        "stock": 30,
-        "category": "comestibles",
-        "thumbnails": "./images/IMG_placeholder.jpg"
-    },
-    {
-        "title": "Muffin-03",
-        "description": "Muffin-03 Descripción",
-        "code": "EAT003",
-        "price": 215,
-        "status": true,
-        "stock": 30,
-        "category": "comestibles",
-        "thumbnails": "./images/IMG_placeholder.jpg"
-    },
-    {
-        "title": "Muffin-04",
-        "description": "Muffin-04 Descripción",
-        "code": "EAT004",
-        "price": 215,
-        "status": true,
-        "stock": 30,
-        "category": "comestibles",
-        "thumbnails": "./images/IMG_placeholder.jpg"
-    },
-    {
-        "title": "Jugo-01",
-        "description": "Jugo-01 Descripción",
-        "code": "JUI001",
-        "price": 215,
-        "status": true,
-        "stock": 30,
-        "category": "jugos",
-        "thumbnails": "./images/IMG_placeholder.jpg"
-    },
-    {
-        "title": "Jugo-02",
-        "description": "Jugo-02 Descripción",
-        "code": "JUI002",
-        "price": 215,
-        "status": true,
-        "stock": 30,
-        "category": "jugos",
-        "thumbnails": "./images/IMG_placeholder.jpg"
-    },
-    {
-        "title": "Jugo-03",
-        "description": "Jugo-03 Descripción",
-        "code": "JUI003",
-        "price": 215,
-        "status": true,
-        "stock": 30,
-        "category": "jugos",
-        "thumbnails": "./images/IMG_placeholder.jpg"
-    },
-    {
-        "title": "Jugo-04",
-        "description": "Jugo-04 Descripción",
-        "code": "JUI004",
-        "price": 215,
-        "status": true,
-        "stock": 30,
-        "category": "jugos",
-        "thumbnails": "./images/IMG_placeholder.jpg"
-    },
-]
 
-
-
-export default ProductsMongoManager
+export default CartsMongoManager;
