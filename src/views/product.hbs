@@ -1,11 +1,12 @@
 <main class="main">
   <section class="container">
     <h1>Product ID: {{product._id}}</h1>
-    <h2>Carrito ID: {{cartId}}</h2>
+    <h2 id="cartID">Carrito ID: {{cart}}</h2>
+
     <div>
       <div class="product-card">
         <div class="product-image">
-          <img src={{product.thumbnails}} alt="/images/IMG_placeholder.jpg" />
+          <img src={{product.thumbnails}} alt="Product-Image" />
         </div>
         <div class="product-info">
           <h2>Producto: {{product.title}}</h2>
@@ -15,17 +16,26 @@
           <h4>Stock: {{product.stock}}</h4>
           <p>Categoría: {{product.category}}</p>
           <p>Código: {{product.code}}</p>
-          <button
-            id="addToCartBtn"
-            class="product-btn"
-            data-product-id="{{product._id}}"
-            data-product-title="{{product.title}}"
-            data-cart-id="{{cartId}}"
-          >Agregar al carrito</button>
+          <p>Owner: {{product.owner}}</p>
+          <div class="product-card">
+            <div>
+              <h3>Cantidad:</h3>
+            </div>
+            <div class="quantity-controls">
+              <button id="decreaseQuantityBtn" class="quantityBtn">-</button>
+              <span id="productQuantity" class="quantityNumber">1</span>
+              <button id="increaseQuantityBtn" class="quantityBtn">+</button>
+            </div>
+
+          </div>
+          <button id="addToCartBtn" class="product-btn" data-product-id="{{product._id}}"
+            data-product-title="{{product.title}}" data-cart-id="{{cartId}}">Agregar al carrito</button>
         </div>
       </div>
     </div>
   </section>
+  <button id="volverBtn" class="product-btn">Volver</button>
 </main>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link rel="stylesheet" href="/css/product.css" />
 <script async src="/js/product.js"></script>

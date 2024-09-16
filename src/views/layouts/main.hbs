@@ -1,31 +1,114 @@
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/css/styles.css" />
-    <link
-      href=" https://cdn.jsdelivr.net/npm/sweetalert2@11.11.0/dist/sweetalert2.min.css "
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-      crossorigin="anonymous"
-    />
+<!DOCTYPE html>
+<html lang="es">
 
-    <title>eCommerce</title>
-  </head>
-  <body>
-    {{{body}}}
-    <script src="/socket.io/socket.io.js"></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src=" https://cdn.jsdelivr.net/npm/sweetalert2@11.11.0/dist/sweetalert2.all.min.js "
-    ></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/css/main.css" />
+  <link href=" https://cdn.jsdelivr.net/npm/sweetalert2@11.11.0/dist/sweetalert2.min.css " rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+
+  <title>eCommerce</title>
+</head>
+<header>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">CoffeeShop</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          {{#if user.email}}
+          {{#if (eq user.role "user")}}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              <div class="profile-pic">
+                {{#if user.thumbnails.profilePicture}}
+                <img src={{user.thumbnails.profilePicture}} alt="Profile Picture">
+                {{else}}
+                <img src="/images/Profile_default.png" alt="Profile Picture">
+                {{/if}}
+              </div>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li><h5 id="user-name" class="dropdown-header" data-user-id="{{user.id}}">{{user.first_name}}</h5></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a id="viewCartBtn" class="dropdown-item" href="#" data-user-id={{user.id}}>Carrito</a></li>
+              <li><a id="viewUserAccountBtn" class="dropdown-item" href="#" data-user-id={{user.id}}>Administrar Cuenta</a></li>
+              <li><a id="chatBtn" class="dropdown-item" href="#" data-user-id={{user.id}}>Chat</a></li>
+              {{/if}}
+              {{#if (eq user.role "premium")}}
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                  aria-expanded="false">
+                  <div class="profile-pic">
+                    {{#if user.thumbnails.profilePicture}}
+                    <img src={{user.thumbnails.profilePicture}} alt="Profile Picture">
+                    {{else}}
+                    <img src="/images/Profile_default.png" alt="Profile Picture">
+                    {{/if}}
+                  </div>
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <li><h5 id="user-name" class="dropdown-header" data-user-id="{{user.id}}">{{user.first_name}}</h5></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a id="viewCartBtn" class="dropdown-item" href="#" data-user-id={{user.id}}>Carrito</a></li>
+                  <li><a id="viewUserAccountBtn" class="dropdown-item" href="#" data-user-id={{user.id}}>Administrar Cuenta</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a id="createProductBtn" class="dropdown-item" href="/create-products">Crear Producto</a></li>
+                  <li><a id="realtimeproductsBtn" class="dropdown-item" href="/realtimeproducts">Real Time Products</a></li>
+                  {{/if}}
+                  {{#if (eq user.role "admin")}}
+                  <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                      data-bs-toggle="dropdown" aria-expanded="false">
+                      <div class="profile-pic">
+                        {{#if user.thumbnails.profilePicture}}
+                        <img src={{user.thumbnails.profilePicture}} alt="Profile Picture">
+                        {{else}}
+                        <img src="/images/Profile_default.png" alt="Profile Picture">
+                        {{/if}}
+                      </div>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      <li><h5 class="dropdown-header">admin</h5></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a id="createProductBtn" class="dropdown-item" href="/create-products">Crear Producto</a></li>
+                      <li><a id="realtimeproductsBtn" class="dropdown-item" href="/realtimeproducts">Real Time Products</a></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item" href="/apidocs">API Docs</a></li>
+                      <li><a class="dropdown-item" href="/users-manager">Todos los Usuarios</a></li>
+                      {{/if}}
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a id="logOutBtn" class="dropdown-item" href="#">Log Out</a></li>
+                    </ul>
+                  </li>
+                  {{else}}
+                  <li class="nav-item">
+                    <a class="nav-link" href="/login">Login</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/register">Register</a>
+                  </li>
+                  {{/if}}
+                </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<body>
+  {{{body}}}
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+  <script src=" https://cdn.jsdelivr.net/npm/sweetalert2@11.11.0/dist/sweetalert2.all.min.js "></script>
+  <script src="/js/main.js"></script>
+</body>
+
 </html>

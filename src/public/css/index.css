@@ -1,0 +1,154 @@
+body {
+  background-color: #f7f1e3;
+  color: #5e412f;
+  font-family: 'Helvetica', sans-serif;
+}
+
+.main {
+  text-align: center;
+  color: #5e412f;
+}
+
+.section-title {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: #3b2e1f;
+}
+
+.divider {
+  width: 50%;
+  margin: 0 auto;
+  border: 1px solid #d3c0a6;
+}
+
+.filter-section .btn {
+  width: 200px;
+  background-color: #5e412f;
+  color: #fff; 
+  border: none;
+}
+
+.filter-section .btn:hover {
+  background-color: #8a6b54;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  justify-content: center;
+}
+
+.product-card {
+  background-color: #e0d5c1;
+  width: 100%;
+  max-width: 250px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.product-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  background-color: #f0ece0;
+}
+
+.product-info {
+  color: #3b2e1f;
+  padding: 15px;
+  overflow: hidden;
+}
+
+.product-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #5e412f;
+}
+
+.product-price {
+  font-size: 20px;
+  color: #8a6b54;
+  margin-bottom: 20px;
+}
+
+.product-btn {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  text-align: center;
+  background-color: #5e412f;
+  color: #f7f1e3;
+  border: none;
+  border-radius: 0 0 10px 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.product-btn:hover {
+  background-color: #8a6b54;
+}
+
+.container-center a {
+  margin: 0 10px;
+  color: #5e412f;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.container-center a:hover {
+  color: #8a6b54;
+}
+
+.dropdown-menu {
+  background-color: #f7f1e3;
+  color: #5e412f;
+}
+
+.dropdown-menu a {
+  color: #5e412f;
+}
+
+.dropdown-menu a:hover {
+  background-color: #8a6b54;
+  color: #fff;
+}
+
+#searchInput {
+  background-color: #f0ece0;
+  border: 1px solid #d3c0a6;
+}
+
+#searchInput::placeholder {
+  color: #8a6b54;
+}
+
+.btn-secondary {
+  background-color: #5e412f;
+  color: #f7f1e3;
+  border: none;
+}
+
+.btn-secondary:hover {
+  background-color: #8a6b54;
+}
+
+/* Dropdowns */
+/* .dropdown-item {
+  color: #5e412f;
+}
+
+.dropdown-item:hover {
+  background-color: #8a6b54;
+  color: #fff;
+}
+
+.dropdown .dropdown-toggle {
+  background-color: #f0ece0;
+  border: 1px solid #d3c0a6;
+  color: #5e412f; 
+  font-size: smaller;
+  margin-top: -30px;
+} */

@@ -1,2 +1,5 @@
-node_modules/
-
+/node_modules
+/src/public/uploads
+.env.development
+.env.production
+errors.log

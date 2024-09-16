@@ -1,17 +1,37 @@
-<div>
-    <h1>Page de Users</h1>
+<section>
+  <div class="container mt-2">
+    <h1>Todos los Usuarios</h1>
+    <div class="d-flex flex-row-reverse bd-highlight">
+      <button id="volverBtn" class="product-btn btn btn-secondary btn-lg">Volver</button>
+    </div>
+  </div>
+  <div class="container mt-2">
     {{#each users}}
-        <p>Nombre: {{this.first_name}} - {{this.last_name}}</p>
-        <p>Email:  {{this.email}}</p>
-        <hr>
+    <div id="user-details" class="user-details" data-user-id="{{user.id}}">
+      <p>Email: {{this.email}}</p>
+      <p>Rol: <span id="role-{{this.id}}">{{this.role}}</span></p>
+      <p>Nombre: {{this.first_name}} {{this.last_name}}</p>
+      <div class="form-check form-switch">
+        <input class="form-check-input role-switch" type="checkbox" data-user-id="{{this._id}}" {{#if (eq
+          this.role 'premium' )}}checked{{/if}}>
+        <label class="form-check-label" for="flexSwitchCheckChecked">Premium user</label>
+      </div>
+      <div class="container mt-2">
+        <button type="submit" class="btn btn-outline-danger mt-3" data-user-id="{{this.id}}">Borrar Usuario</button>
+      </div>
+      <hr />
+    </div>
     {{/each}}
     <center>
-        {{#if hasPrevPage}}
-            <a href="/users?numPage={{prevPage}}">Anterior</a>
-        {{/if}}
-        <label>{{page}}</label>
-        {{#if hasNextPage}}
-            <a href="/users?numPage={{nextPage}}">Siguente</a>
-        {{/if}}
+      {{#if hasPrevPage}}
+      <a href="/users?numPage={{prevPage}}">Anterior</a>
+      {{/if}}
+      <label>{{page}}</label>
+      {{#if hasNextPage}}
+      <a href="/users?numPage={{nextPage}}">Siguiente</a>
+      {{/if}}
     </center>
-</div>
+  </div>
+  </div>
+</section>
+<script async src="/js/users.js"></script>
