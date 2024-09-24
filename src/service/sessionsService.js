@@ -3,7 +3,7 @@ import { generateToken } from '../utils/jsonwebtoken.js';
 import { cartService, userService } from './service.js';
 import { sendEmailMessage } from '../utils/sendEmailMessage.js';
 import { objectConfig } from '../config/config.js';
-import { logger } from '../utils/logger.js';
+
 
 const { admin_email, admin_password, admin_cart } = objectConfig;
 
